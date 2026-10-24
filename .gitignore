@@ -1,0 +1,11 @@
+target/
+.vscode/
+.idea/
+*.iml
+*.log
+logs/
+# Base de datos local (contiene datos y hashes de contrasenas)
+data/
+# Secretos: NUNCA subir
+application-local.properties
+.env

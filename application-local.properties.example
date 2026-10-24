@@ -1,0 +1,4 @@
+# Copia este archivo como application-local.properties (queda fuera de Git)
+# o ejecuta .\configurar.ps1 para crearlo.
+bodega.admin.correo=admin@bodegafrancisco.pe
+bodega.admin.password=CAMBIA_ESTA_CLAVE_1
