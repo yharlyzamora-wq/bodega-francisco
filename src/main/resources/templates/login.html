@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Ingresar')}"></head>
+<body>
+  <header th:replace="~{fragments :: barra}"></header>
+  <main class="fondo-auth">
+    <section class="auth">
+      <h1 th:text="${admin} ? 'Ingreso administrador' : 'Ingreso cliente'">Ingreso cliente</h1>
+      <p class="sub" th:text="${admin} ? 'Acceso al panel interno de la bodega.' : 'Accede para consultar productos, realizar pedidos y revisar el estado de tu compra.'"></p>
+
+      <p class="aviso ok" th:if="${param.registrado}">Cuenta creada. Ya puedes ingresar.</p>
+      <p class="aviso error" th:if="${param.error != null and param.error[0] == 'bloqueado'}" role="alert">Demasiados intentos. Espera 15 minutos e inténtalo de nuevo.</p>
+      <p class="aviso error" th:if="${param.error != null and param.error[0] != 'bloqueado'}" role="alert">Correo o contraseña incorrectos.</p>
+
+      <form th:action="@{/login}" method="post">
+        <input type="hidden" name="origen" th:value="${admin} ? 'admin' : 'cliente'">
+        <label for="correo">Correo</label>
+        <input id="correo" name="correo" type="email" autocomplete="username" required maxlength="120" placeholder="tucorreo@ejemplo.com">
+        <label for="password">Contraseña</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="100" placeholder="Ingresa tu contraseña">
+        <button class="btn" type="submit">Iniciar sesión</button>
+      </form>
+      <a class="btn secundario" th:if="${!admin}" th:href="@{/registro}">Crear cuenta</a>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Crear cuenta')}"></head>
+<body>
+  <header th:replace="~{fragments :: barra}"></header>
+  <main class="fondo-auth">
+    <section class="auth">
+      <h1>Crear cuenta</h1>
+      <p class="sub">Regístrate para hacer pedidos y seguirlos desde la web.</p>
+      <p class="aviso error" th:if="${errorNegocio}" th:text="${errorNegocio}" role="alert"></p>
+
+      <form th:action="@{/registro}" th:object="${form}" method="post">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" th:field="*{nombre}" maxlength="80" autocomplete="given-name">
+        <span class="campo-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+
+        <label for="apellido">Apellido</label>
+        <input id="apellido" th:field="*{apellido}" maxlength="80" autocomplete="family-name">
+        <span class="campo-error" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></span>
+
+        <label for="correo">Correo</label>
+        <input id="correo" type="email" th:field="*{correo}" maxlength="120" autocomplete="email">
+        <span class="campo-error" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></span>
+
+        <label for="celular">Celular (opcional)</label>
+        <input id="celular" th:field="*{celular}" maxlength="15" inputmode="numeric" autocomplete="tel">
+        <span class="campo-error" th:if="${#fields.hasErrors('celular')}" th:errors="*{celular}"></span>
+
+        <label for="password">Contraseña (mínimo 8, con letras y números)</label>
+        <input id="password" type="password" name="password" maxlength="100" autocomplete="new-password">
+        <span class="campo-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+
+        <label for="confirmacion">Repite la contraseña</label>
+        <input id="confirmacion" type="password" name="confirmacion" maxlength="100" autocomplete="new-password">
+        <span class="campo-error" th:if="${#fields.hasErrors('confirmacion')}" th:errors="*{confirmacion}"></span>
+
+        <button class="btn" type="submit">Crear cuenta</button>
+      </form>
+      <a class="btn secundario" th:href="@{/login}">Ya tengo cuenta</a>
+    </section>
+  </main>
+</body>
+</html>

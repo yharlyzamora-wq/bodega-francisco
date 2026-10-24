@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: cabeza('Panel')}"></head>
+<body>
+  <header th:replace="~{fragments :: barra}"></header>
+  <main class="contenedor">
+    <section class="portada">
+      <h1>Panel de administración</h1>
+      <p>Sesión iniciada como <strong sec:authentication="name">admin</strong>.</p>
+    </section>
+    <section class="indicadores">
+      <div class="ind verde"><span class="num" th:text="${resumen.activos}">0</span>Productos activos</div>
+      <div class="ind ambar"><span class="num" th:text="${resumen.stockBajo}">0</span>Stock bajo</div>
+      <div class="ind rojo"><span class="num" th:text="${resumen.agotados}">0</span>Agotados</div>
+    </section>
+    <p class="sub">Próximamente: productos, inventario y pedidos.</p>
+  </main>
+</body>
+</html>
