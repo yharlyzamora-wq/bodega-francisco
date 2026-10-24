@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Catálogo')}"></head>
+<body>
+  <header th:replace="~{fragments :: barra}"></header>
+
+  <main class="contenedor">
+    <p class="aviso" th:if="${param.salio}">Cerraste sesión correctamente.</p>
+    <p class="aviso error" th:if="${param.sin_permiso}">No tienes permiso para entrar a esa sección.</p>
+
+    <section class="portada">
+      <h1>Tu bodega de barrio a un clic</h1>
+      <p>Consulta lo que hay en stock y pide para recojo o delivery.</p>
+    </section>
+
+    <section class="rejilla" th:if="${!productos.isEmpty()}" aria-label="Productos">
+      <article class="tarjeta" th:each="p : ${productos}">
+        <div class="ficha" th:text="${#strings.substring(p.categoria, 0, 1)}">B</div>
+        <h2 th:text="${p.nombre}">Producto</h2>
+        <p class="cat" th:text="${p.categoria}">Categoría</p>
+        <p class="precio" th:text="${'S/ ' + #numbers.formatDecimal(p.precio, 1, 2)}">S/ 0.00</p>
+        <span class="pildora ok" th:if="${p.disponible() and !p.stockBajo()}" th:text="${p.stock + ' disponibles'}">Disponible</span>
+        <span class="pildora bajo" th:if="${p.stockBajo()}" th:text="${'Quedan ' + p.stock}">Stock bajo</span>
+        <span class="pildora agotado" th:if="${!p.disponible()}">Agotado</span>
+      </article>
+    </section>
+
+    <p class="vacio" th:if="${productos.isEmpty()}">Aún no hay productos publicados. Vuelve pronto.</p>
+  </main>
+</body>
+</html>

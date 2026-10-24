@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="cabeza(titulo)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="'Bodega Francisco | ' + ${titulo}">Bodega Francisco</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/bodega.css}">
+</head>
+<body>
+<header class="barra" th:fragment="barra">
+  <a class="marca" th:href="@{/}"><span class="logo" aria-hidden="true">&#127978;</span> BODEGA FRANCISCO</a>
+  <nav>
+    <a th:href="@{/catalogo}">Catálogo</a>
+    <a sec:authorize="hasAnyRole('ADMIN','PERSONAL')" th:href="@{/admin}">Panel</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/login}">Ingresar</a>
+    <a sec:authorize="!isAuthenticated()" class="activo" th:href="@{/registro}">Crear cuenta</a>
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="salir">
+      <button type="submit" class="enlace">Cerrar sesión</button>
+    </form>
+  </nav>
+</header>
+</body>
+</html>
