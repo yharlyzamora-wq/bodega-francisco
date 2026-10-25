@@ -8,7 +8,10 @@ import pe.bodegafrancisco.dao.ProductoDao;
 import pe.bodegafrancisco.model.Producto;
 import pe.bodegafrancisco.model.ResumenInventario;
 
-/** Reglas del catálogo (RF01). Depende de la interfaz ProductoDao (inversión de dependencias). */
+/**
+ * Reglas del catálogo (RF01). Depende de la interfaz ProductoDao (inversión de
+ * dependencias).
+ */
 @Service
 public class CatalogoService {
 
@@ -19,7 +22,10 @@ public class CatalogoService {
         this.productoDao = productoDao;
     }
 
-    /** @return solo productos activos; un producto inactivo nunca se muestra al cliente. */
+    /**
+     * @return solo productos activos; un producto inactivo nunca se muestra al
+     *         cliente.
+     */
     public List<Producto> listarCatalogo() {
         List<Producto> activos = productoDao.listarTodos().stream()
                 .filter(Producto::activo)
@@ -34,5 +40,10 @@ public class CatalogoService {
         long bajo = activos.stream().filter(Producto::stockBajo).count();
         long agotados = activos.stream().filter(p -> p.stock() == 0).count();
         return new ResumenInventario(activos.size(), bajo, agotados);
+    }
+
+    /** @return productos activos con pocas unidades, para las alertas del panel. */
+    public List<Producto> listarStockBajo() {
+        return listarCatalogo().stream().filter(Producto::stockBajo).toList();
     }
 }

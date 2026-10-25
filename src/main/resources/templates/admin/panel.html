@@ -2,18 +2,53 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments :: cabeza('Panel')}"></head>
 <body>
-  <header th:replace="~{fragments :: barra}"></header>
-  <main class="contenedor">
-    <section class="portada">
-      <h1>Panel de administración</h1>
-      <p>Sesión iniciada como <strong sec:authentication="name">admin</strong>.</p>
-    </section>
-    <section class="indicadores">
-      <div class="ind verde"><span class="num" th:text="${resumen.activos}">0</span>Productos activos</div>
-      <div class="ind ambar"><span class="num" th:text="${resumen.stockBajo}">0</span>Stock bajo</div>
-      <div class="ind rojo"><span class="num" th:text="${resumen.agotados}">0</span>Agotados</div>
-    </section>
-    <p class="sub">Próximamente: productos, inventario y pedidos.</p>
-  </main>
+  <svg th:replace="~{fragments :: iconos}"></svg>
+  <header th:replace="~{fragments :: barraAdmin}"></header>
+  <div class="shell">
+    <nav th:replace="~{fragments :: menuAdmin('inicio')}"></nav>
+
+    <main class="principal">
+      <section class="bienvenida">
+        <h1>¡Bienvenido, <span sec:authorize="hasRole('ADMIN')">Administrador</span><span sec:authorize="!hasRole('ADMIN')">Personal</span>!</h1>
+        <p>Aquí puedes gestionar tu tienda, revisar pedidos y ver el estado general.</p>
+      </section>
+
+      <section class="stats" aria-label="Indicadores">
+        <div class="stat verde"><span class="ico"><svg class="i"><use href="#i-box"/></svg></span>Productos activos<span class="num" th:text="${resumen.activos}">0</span></div>
+        <div class="stat ambar"><span class="ico"><svg class="i"><use href="#i-alert"/></svg></span>Stock bajo<span class="num" th:text="${resumen.stockBajo}">0</span></div>
+        <div class="stat rojo"><span class="ico"><svg class="i"><use href="#i-stack"/></svg></span>Agotados<span class="num" th:text="${resumen.agotados}">0</span></div>
+        <div class="stat azul"><span class="ico"><svg class="i"><use href="#i-cart"/></svg></span>Pedidos del día<span class="num">—</span><small>Próximamente</small></div>
+      </section>
+
+      <section class="panel">
+        <h2>Productos con stock bajo</h2>
+        <p class="vacio" th:if="${alertas.isEmpty()}">Todo en orden: no hay productos con stock bajo.</p>
+        <div class="tabla-wrap" th:if="${!alertas.isEmpty()}">
+          <table class="tabla">
+            <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Stock</th><th>Precio</th></tr></thead>
+            <tbody>
+              <tr th:each="p : ${alertas}">
+                <td th:text="${p.codigo}">PE-0001</td>
+                <td th:text="${p.nombre}">Producto</td>
+                <td th:text="${p.categoria}">Categoría</td>
+                <td><span class="pildora agotado" th:text="${p.stock}">3</span></td>
+                <td th:text="${'S/ ' + #numbers.formatDecimal(p.precio, 1, 2)}">S/ 0.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section aria-label="Acciones rápidas">
+        <h2>Acciones rápidas</h2>
+        <div class="acciones">
+          <a class="accion verde pronto" aria-disabled="true" tabindex="-1"><span class="ico"><svg class="i"><use href="#i-box"/></svg></span>Registrar producto<svg class="i flecha"><use href="#i-arrow"/></svg></a>
+          <a class="accion ambar pronto" aria-disabled="true" tabindex="-1"><span class="ico"><svg class="i"><use href="#i-card"/></svg></span>Revisar pagos<svg class="i flecha"><use href="#i-arrow"/></svg></a>
+          <a class="accion azul pronto" aria-disabled="true" tabindex="-1"><span class="ico"><svg class="i"><use href="#i-chart"/></svg></span>Ver reportes<svg class="i flecha"><use href="#i-arrow"/></svg></a>
+          <a class="accion rojo pronto" aria-disabled="true" tabindex="-1"><span class="ico"><svg class="i"><use href="#i-chat"/></svg></span>Atender reclamos<svg class="i flecha"><use href="#i-arrow"/></svg></a>
+        </div>
+      </section>
+    </main>
+  </div>
 </body>
 </html>

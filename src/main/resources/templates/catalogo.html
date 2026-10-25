@@ -2,30 +2,84 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments :: cabeza('Catálogo')}"></head>
 <body>
+  <svg th:replace="~{fragments :: iconos}"></svg>
   <header th:replace="~{fragments :: barra}"></header>
 
   <main class="contenedor">
-    <p class="aviso" th:if="${param.salio}">Cerraste sesión correctamente.</p>
+    <p class="aviso ok" th:if="${param.salio}">Cerraste sesión correctamente.</p>
     <p class="aviso error" th:if="${param.sin_permiso}">No tienes permiso para entrar a esa sección.</p>
 
     <section class="portada">
-      <h1>Tu bodega de barrio a un clic</h1>
-      <p>Consulta lo que hay en stock y pide para recojo o delivery.</p>
+      <div>
+        <h1>Tu bodega de barrio a un clic</h1>
+        <p>Consulta lo que hay en stock y pide para recojo o delivery.</p>
+        <div class="campo buscador">
+          <svg class="i"><use href="#i-search"/></svg>
+          <input id="buscar" type="search" placeholder="Buscar producto..." aria-label="Buscar producto" autocomplete="off">
+        </div>
+      </div>
+      <svg class="i deco"><use href="#i-store"/></svg>
     </section>
 
+    <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+    <p class="conteo" id="conteo" aria-live="polite"></p>
+
     <section class="rejilla" th:if="${!productos.isEmpty()}" aria-label="Productos">
-      <article class="tarjeta" th:each="p : ${productos}">
-        <div class="ficha" th:text="${#strings.substring(p.categoria, 0, 1)}">B</div>
-        <h2 th:text="${p.nombre}">Producto</h2>
-        <p class="cat" th:text="${p.categoria}">Categoría</p>
-        <p class="precio" th:text="${'S/ ' + #numbers.formatDecimal(p.precio, 1, 2)}">S/ 0.00</p>
-        <span class="pildora ok" th:if="${p.disponible() and !p.stockBajo()}" th:text="${p.stock + ' disponibles'}">Disponible</span>
-        <span class="pildora bajo" th:if="${p.stockBajo()}" th:text="${'Quedan ' + p.stock}">Stock bajo</span>
-        <span class="pildora agotado" th:if="${!p.disponible()}">Agotado</span>
+      <article class="tarjeta" th:each="p : ${productos}"
+               th:attr="data-cat=${p.categoria},data-nombre=${#strings.toLowerCase(p.nombre)}">
+        <div class="ficha" th:attr="data-cat=${p.categoria}" aria-hidden="true"></div>
+        <div class="cuerpo">
+          <h2 th:text="${p.nombre}">Producto</h2>
+          <p class="cat" th:text="${p.categoria}">Categoría</p>
+          <p class="precio" th:text="${'S/ ' + #numbers.formatDecimal(p.precio, 1, 2)}">S/ 0.00</p>
+          <span class="pildora ok" th:if="${p.disponible() and !p.stockBajo()}" th:text="${p.stock + ' disponibles'}">Disponible</span>
+          <span class="pildora bajo" th:if="${p.stockBajo()}" th:text="${'Quedan ' + p.stock}">Stock bajo</span>
+          <span class="pildora agotado" th:if="${!p.disponible()}">Agotado</span>
+          <button class="btn" type="button" disabled title="Disponible cuando se implemente el carrito">Agregar</button>
+        </div>
       </article>
     </section>
 
     <p class="vacio" th:if="${productos.isEmpty()}">Aún no hay productos publicados. Vuelve pronto.</p>
+    <p class="vacio" id="sin-resultados" hidden>No encontramos productos con ese filtro.</p>
   </main>
+
+  <footer th:replace="~{fragments :: pie}"></footer>
+
+  <script>
+    (function () {
+      var tarjetas = [].slice.call(document.querySelectorAll('.tarjeta'));
+      var buscar = document.getElementById('buscar');
+      var cajaChips = document.getElementById('chips');
+      var conteo = document.getElementById('conteo');
+      var sinRes = document.getElementById('sin-resultados');
+      var categoria = '';
+      var categorias = tarjetas.map(function (t) { return t.dataset.cat; })
+        .filter(function (c, i, a) { return a.indexOf(c) === i; }).sort();
+
+      function chips() {
+        cajaChips.innerHTML = '';
+        ['Todas'].concat(categorias).forEach(function (nombre) {
+          var valor = nombre === 'Todas' ? '' : nombre;
+          var b = document.createElement('button');
+          b.type = 'button'; b.textContent = nombre;
+          if (valor === categoria) b.className = 'on';
+          b.addEventListener('click', function () { categoria = valor; chips(); filtrar(); });
+          cajaChips.appendChild(b);
+        });
+      }
+      function filtrar() {
+        var texto = buscar.value.trim().toLowerCase(), n = 0;
+        tarjetas.forEach(function (t) {
+          var ok = (!categoria || t.dataset.cat === categoria) && (!texto || t.dataset.nombre.indexOf(texto) > -1);
+          t.hidden = !ok; if (ok) n++;
+        });
+        conteo.textContent = tarjetas.length ? 'Mostrando ' + n + ' de ' + tarjetas.length + ' productos' : '';
+        sinRes.hidden = !(tarjetas.length && n === 0);
+      }
+      buscar.addEventListener('input', filtrar);
+      if (tarjetas.length) { chips(); filtrar(); }
+    })();
+  </script>
 </body>
 </html>
