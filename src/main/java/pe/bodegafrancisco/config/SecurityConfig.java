@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 /**
  * Seguridad (RF06): login por formulario, roles validados en el servidor,
@@ -22,11 +23,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        var consolaH2 = PathPatternRequestMatcher.withDefaults().matcher("/h2-console/**");
         http
             .authorizeHttpRequests(a -> a
+                .requestMatchers(consolaH2).hasRole("ADMIN")
                 .requestMatchers("/css/**", "/", "/catalogo", "/login", "/admin/login", "/registro", "/error").permitAll()
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN", "PERSONAL")
                 .anyRequest().authenticated())
+            // La consola H2 usa sus propios formularios y marcos: se exceptúa solo esa ruta
+            .csrf(c -> c.ignoringRequestMatchers(consolaH2))
+            .headers(h -> h.frameOptions(f -> f.sameOrigin()))
             .formLogin(f -> f
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
