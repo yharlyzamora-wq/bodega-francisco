@@ -2,18 +2,24 @@ package pe.bodegafrancisco.dao;
 
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import pe.bodegafrancisco.model.Producto;
 
-/** Implementación JDBC del DAO. Usa consultas parametrizadas (previene inyección SQL). */
+/** Implementación JDBC de lectura de productos. Consultas parametrizadas. */
 @Repository
 public class JdbcProductoDao implements ProductoDao {
 
-    private static final String SQL = """
-            SELECT p.id, p.codigo, p.nombre, c.nombre AS categoria, p.precio, p.stock, p.activo
+    static final String SELECT = """
+            SELECT p.id, p.codigo, p.nombre, p.categoria_id, c.nombre AS categoria,
+                   p.precio, p.stock, p.activo
             FROM producto p JOIN categoria c ON c.id = p.categoria_id
-            ORDER BY p.nombre
             """;
+
+    static final RowMapper<Producto> MAPPER = (rs, i) -> new Producto(
+            rs.getInt("id"), rs.getString("codigo"), rs.getString("nombre"),
+            rs.getInt("categoria_id"), rs.getString("categoria"), rs.getBigDecimal("precio"),
+            rs.getInt("stock"), rs.getBoolean("activo"));
 
     private final JdbcTemplate jdbc;
 
@@ -23,9 +29,6 @@ public class JdbcProductoDao implements ProductoDao {
 
     @Override
     public List<Producto> listarTodos() {
-        return jdbc.query(SQL, (rs, i) -> new Producto(
-                rs.getInt("id"), rs.getString("codigo"), rs.getString("nombre"),
-                rs.getString("categoria"), rs.getBigDecimal("precio"),
-                rs.getInt("stock"), rs.getBoolean("activo")));
+        return jdbc.query(SELECT + " ORDER BY p.nombre", MAPPER);
     }
 }

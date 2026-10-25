@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: cabeza('Productos')}"></head>
+<body>
+  <svg th:replace="~{fragments :: iconos}"></svg>
+  <header th:replace="~{fragments :: barraAdmin}"></header>
+  <div class="shell">
+    <nav th:replace="~{fragments :: menuAdmin('productos')}"></nav>
+
+    <main class="principal">
+      <p class="aviso ok" th:if="${ok}" th:text="${ok}" role="status"></p>
+      <p class="aviso error" th:if="${error}" th:text="${error}" role="alert"></p>
+
+      <section class="bienvenida cabecera-modulo">
+        <div>
+          <h1>Gestión de Productos e Inventario</h1>
+          <p>Administra tus productos, categorías y controla el inventario de tu bodega.</p>
+        </div>
+        <a class="btn-lnk verde" th:href="@{/admin/productos/nuevo}"><svg class="i"><use href="#i-plus"/></svg>Nuevo producto</a>
+      </section>
+
+      <section class="stats" aria-label="Indicadores">
+        <div class="stat verde"><span class="ico"><svg class="i"><use href="#i-box"/></svg></span>Productos activos<span class="num" th:text="${resumen.activos}">0</span></div>
+        <div class="stat ambar"><span class="ico"><svg class="i"><use href="#i-stack"/></svg></span>Categorías<span class="num" th:text="${#lists.size(categorias)}">0</span></div>
+        <div class="stat rojo"><span class="ico"><svg class="i"><use href="#i-alert"/></svg></span>Stock bajo<span class="num" th:text="${resumen.stockBajo}">0</span></div>
+      </section>
+
+      <div class="dos-col">
+        <section class="panel">
+          <h2>Listado de productos</h2>
+          <form class="filtros" method="get" th:action="@{/admin/productos}">
+            <input type="search" name="q" th:value="${q}" placeholder="Buscar por nombre o código" aria-label="Buscar producto" maxlength="60">
+            <select name="cat" aria-label="Filtrar por categoría">
+              <option value="">Todas las categorías</option>
+              <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}" th:selected="${cat != null and cat == c.id}"></option>
+            </select>
+            <button class="btn-lnk verde" type="submit"><svg class="i"><use href="#i-search"/></svg>Buscar</button>
+            <a class="btn-lnk gris" th:href="@{/admin/productos}">Limpiar</a>
+          </form>
+
+          <p class="vacio" th:if="${productos.isEmpty()}">No hay productos que coincidan con la búsqueda.</p>
+          <div class="tabla-wrap" th:if="${!productos.isEmpty()}">
+            <table class="tabla">
+              <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody>
+                <tr th:each="p : ${productos}">
+                  <td th:text="${p.codigo}">PE-0001</td>
+                  <td><strong th:text="${p.nombre}">Producto</strong></td>
+                  <td th:text="${p.categoria}">Categoría</td>
+                  <td th:text="${'S/ ' + #numbers.formatDecimal(p.precio, 1, 2)}">S/ 0.00</td>
+                  <td><span class="stock" th:classappend="${p.stock == 0 or p.stockBajo()} ? 'bajo' : 'ok'" th:text="${p.stock}">0</span></td>
+                  <td>
+                    <span class="pildora gris" th:if="${!p.activo}">Inactivo</span>
+                    <span class="pildora agotado" th:if="${p.activo and p.stock == 0}">Agotado</span>
+                    <span class="pildora bajo" th:if="${p.stockBajo()}">Stock bajo</span>
+                    <span class="pildora ok" th:if="${p.activo and p.stock > 0 and !p.stockBajo()}">Activo</span>
+                  </td>
+                  <td>
+                    <div class="acc-fila">
+                      <a class="ibtn" th:href="@{/admin/productos/{id}/editar(id=${p.id})}" th:attr="aria-label='Editar ' + ${p.nombre},title='Editar'"><svg class="i"><use href="#i-edit"/></svg></a>
+                      <form class="en-linea" th:action="@{/admin/productos/{id}/estado(id=${p.id})}" method="post">
+                        <input type="hidden" name="activo" th:value="${!p.activo}">
+                        <button type="submit" class="ibtn" th:classappend="${p.activo} ? 'rojo' : 'verde'"
+                                th:attr="aria-label=(${p.activo} ? 'Desactivar ' : 'Activar ') + ${p.nombre},title=(${p.activo} ? 'Desactivar' : 'Activar')">
+                          <svg class="i"><use th:attr="href=${p.activo} ? '#i-ban' : '#i-check'"/></svg>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="conteo" th:text="'Mostrando ' + ${productos.size()} + ' de ' + ${todos.size()} + ' productos'"></p>
+        </section>
+
+        <form class="panel form-admin" th:action="@{/admin/productos/stock}" method="post">
+          <h2>Actualizar stock</h2>
+          <label for="productoId">Producto</label>
+          <select id="productoId" name="productoId" required>
+            <option th:each="p : ${todos}" th:if="${p.activo}" th:value="${p.id}"
+                    th:text="${p.nombre + ' (' + p.codigo + ') · ' + p.stock + ' u.'}"></option>
+          </select>
+          <label for="tipo">Tipo de movimiento</label>
+          <select id="tipo" name="tipo" required>
+            <option th:each="t : ${tipos}" th:value="${t.name()}" th:text="${t.etiqueta()}"></option>
+          </select>
+          <label for="cantidad">Cantidad</label>
+          <input id="cantidad" name="cantidad" type="number" min="0" max="100000" step="1" required inputmode="numeric">
+          <p class="ayuda">En "Ajuste" escribe el stock real que contaste.</p>
+          <label for="motivo">Motivo (opcional)</label>
+          <input id="motivo" name="motivo" maxlength="120" placeholder="Ej.: compra a proveedor">
+          <button class="btn" type="submit"><svg class="i"><use href="#i-save"/></svg>Guardar movimiento</button>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

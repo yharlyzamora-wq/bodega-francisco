@@ -29,6 +29,11 @@
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2zM12 10v5M12 18v.01"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h12l4 4v14H3V3zM7 3v6h8V3M7 21v-7h10v7"/></symbol>
 </svg>
 
 <!-- Barra pública -->
@@ -57,7 +62,7 @@
 <!-- Menú lateral: los módulos sin construir salen apagados -->
 <nav class="menu" th:fragment="menuAdmin(activo)" aria-label="Módulos">
   <a th:href="@{/admin}" th:classappend="${activo == 'inicio'} ? 'on'"><svg class="i"><use href="#i-home"/></svg>Inicio</a>
-  <a class="pronto" aria-disabled="true" tabindex="-1" title="Próximamente"><svg class="i"><use href="#i-box"/></svg>Productos</a>
+  <a th:href="@{/admin/productos}" th:classappend="${activo == 'productos'} ? 'on'"><svg class="i"><use href="#i-box"/></svg>Productos</a>
   <a class="pronto" aria-disabled="true" tabindex="-1" title="Próximamente"><svg class="i"><use href="#i-stack"/></svg>Inventario</a>
   <a class="pronto" aria-disabled="true" tabindex="-1" title="Próximamente"><svg class="i"><use href="#i-cart"/></svg>Pedidos</a>
   <a class="pronto" aria-disabled="true" tabindex="-1" title="Próximamente"><svg class="i"><use href="#i-card"/></svg>Pagos</a>
