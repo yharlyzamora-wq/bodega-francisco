@@ -85,6 +85,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: .6rem;
+  min-width: 0;
   color: var(--guinda);
   font-weight: 700;
   font-size: 1.25rem;
@@ -102,6 +103,7 @@ a {
   gap: .3rem;
   align-items: center;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .barra nav a,
@@ -139,6 +141,7 @@ a {
 .usuario {
   text-align: right;
   font-family: "IBM Plex Mono", monospace;
+  flex: none;
 }
 
 .usuario strong {
@@ -338,7 +341,7 @@ a {
 
 .fila {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: .8rem;
 }
 
@@ -368,7 +371,7 @@ a {
 
 .portada {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 1rem;
   background: linear-gradient(120deg, var(--crema), #fff8e1);
@@ -444,7 +447,7 @@ a {
 
 .rejilla {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
   gap: 1.1rem;
 }
 
@@ -605,7 +608,7 @@ a {
 /* ---- Panel de administración ---- */
 .shell {
   display: grid;
-  grid-template-columns: 250px 1fr;
+  grid-template-columns: 250px minmax(0, 1fr);
   min-height: calc(100vh - 68px);
 }
 
@@ -615,6 +618,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: .5rem;
+  min-width: 0;
 }
 
 .menu a {
@@ -647,6 +651,7 @@ a {
 .principal {
   padding: 1.3rem 1.5rem 2rem;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.1rem;
   align-content: start;
   min-width: 0;
@@ -671,7 +676,7 @@ a {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
 }
 
@@ -682,6 +687,7 @@ a {
   display: grid;
   gap: .3rem;
   justify-items: center;
+  align-content: start;
   font-weight: 600;
 }
 
@@ -735,6 +741,7 @@ a {
   border-radius: var(--radio);
   padding: 1.1rem 1.2rem;
   box-shadow: var(--sombra);
+  min-width: 0;
 }
 
 .panel h2 {
@@ -779,7 +786,7 @@ table.tabla {
 
 .acciones {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
   gap: .9rem;
 }
 
@@ -833,14 +840,16 @@ table.tabla {
   pointer-events: none;
 }
 
+/* ---- Responsivo ---- */
 @media (max-width: 860px) {
   .shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .menu {
     flex-direction: row;
     overflow-x: auto;
+    min-width: 0;
   }
 
   .menu a {
@@ -848,7 +857,7 @@ table.tabla {
   }
 
   .portada {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .portada .deco {
@@ -859,18 +868,53 @@ table.tabla {
 @media (max-width: 520px) {
   .barra {
     padding: .7rem 1rem;
+    gap: .6rem;
   }
 
   .marca {
-    font-size: 1.05rem;
+    font-size: 1rem;
+    gap: .4rem;
+  }
+
+  .marca .i {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 
   .fila {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .principal {
     padding: 1rem;
+  }
+
+  .contenedor {
+    padding: 1rem;
+  }
+
+  .portada {
+    padding: 1.2rem;
+  }
+
+  .portada h1 {
+    font-size: 1.4rem;
+  }
+
+  .usuario {
+    font-size: .85rem;
+  }
+
+  .stat .num {
+    font-size: 1.7rem;
+  }
+
+  .bienvenida h1 {
+    font-size: 1.2rem;
+  }
+
+  .auth {
+    padding: 1.4rem 1.1rem;
   }
 }
 
