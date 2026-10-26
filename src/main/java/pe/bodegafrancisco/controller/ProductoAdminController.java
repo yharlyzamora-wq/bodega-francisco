@@ -18,6 +18,10 @@ import pe.bodegafrancisco.model.Producto;
 import pe.bodegafrancisco.model.TipoMovimiento;
 import pe.bodegafrancisco.service.CatalogoService;
 import pe.bodegafrancisco.service.ProductoService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import pe.bodegafrancisco.service.ExportacionService;
 
 /**
  * Gestión de productos e inventario. Acceso restringido en SecurityConfig
@@ -32,10 +36,13 @@ public class ProductoAdminController {
 
     private final ProductoService service;
     private final CatalogoService catalogoService;
+    private final ExportacionService exportacionService;
 
-    public ProductoAdminController(ProductoService service, CatalogoService catalogoService) {
+    public ProductoAdminController(ProductoService service, CatalogoService catalogoService,
+            ExportacionService exportacionService) {
         this.service = service;
         this.catalogoService = catalogoService;
+        this.exportacionService = exportacionService;
     }
 
     @GetMapping
@@ -127,5 +134,14 @@ public class ProductoAdminController {
         model.addAttribute("producto", producto);
         model.addAttribute("categorias", service.categorias());
         return VISTA_FORM;
+    }
+
+    @GetMapping("/exportar")
+    public ResponseEntity<byte[]> exportar() {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"stock-productos.xlsx\"")
+                .contentType(
+                        MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(exportacionService.stockProductosXlsx());
     }
 }

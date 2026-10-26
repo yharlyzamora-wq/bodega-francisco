@@ -16,7 +16,10 @@
           <h1>Gestión de Productos e Inventario</h1>
           <p>Administra tus productos, categorías y controla el inventario de tu bodega.</p>
         </div>
-        <a class="btn-lnk verde" th:href="@{/admin/productos/nuevo}"><svg class="i"><use href="#i-plus"/></svg>Nuevo producto</a>
+        <div class="acc-fila">
+          <a class="btn-lnk gris" th:href="@{/admin/productos/exportar}"><svg class="i"><use href="#i-save"/></svg>Exportar a Excel</a>
+          <a class="btn-lnk verde" th:href="@{/admin/productos/nuevo}"><svg class="i"><use href="#i-plus"/></svg>Nuevo producto</a>
+        </div>
       </section>
 
       <section class="stats" aria-label="Indicadores">
