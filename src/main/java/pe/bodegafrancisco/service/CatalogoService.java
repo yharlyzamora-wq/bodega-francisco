@@ -15,9 +15,7 @@ import pe.bodegafrancisco.model.ResumenInventario;
 @Service
 public class CatalogoService {
 
-    private static final Logger log = LoggerFactory.getLogger(CatalogoService.class);
-    private final ProductoDao productoDao;
-
+   
     public CatalogoService(ProductoDao productoDao) {
         this.productoDao = productoDao;
     }
